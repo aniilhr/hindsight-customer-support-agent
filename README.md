@@ -2,6 +2,8 @@
 
 **Relay** is the support agent for *ShipRelay*, a (fictional) shipping and fulfilment platform used by online merchants. It answers customers in chat, checks shipments and invoices, opens tickets, issues credits and escalates.
 
+
+
 Most support bots are stateless. They know the CRM record, so they know your plan. They don't know that your Zebra printer went blank last spring because a firmware update reset it to 203 dpi, that the first rep made you reinstall the Print Agent for nothing, or that we promised your account manager would be copied the next time FedEx rates broke. Relay knows these things because every conversation is written to [Hindsight](https://github.com/vectorize-io/hindsight) agent memory and recalled before each reply.
 
 It also learns across customers. When a case is resolved, the anonymised lesson (symptom → root cause → fix that worked → fix that didn't) goes into a shared **playbook** bank. The next merchant with the same problem gets the right fix in the first message.
@@ -19,7 +21,7 @@ These are the seeded scenarios and the behaviour the agent is designed to produc
 | Rahul (new customer, 3 weeks old): *"Labels blank since the printer updated overnight"* | Generic printer troubleshooting. | No personal history, but the **playbook** has Priya's anonymised resolution, so he gets the 203 dpi fix on the first reply. |
 | Tom (non-technical): *"Import says invalid header again"* | Explains CSV encodings. | Remembers it was Mac Excel saving UTF-16 and walks him through *File › Save As › CSV UTF-8*, one step at a time, which is how he asked to be helped. |
 
-The UI has a **Compare** mode that sends the same message to both agents side by side. That makes the before/after visible within seconds.
+The ui has a **Compare** mode that sends the same message to both agents side by side. That makes the before/after visible within seconds.
 
 ## How Hindsight is used
 
@@ -109,6 +111,8 @@ scripts/    seed.py: load SQLite + Hindsight
 tests/      pytest suite (fakes, no network)
 docs/       architecture diagram
 ```
+
+
 
 ## License
 MIT
