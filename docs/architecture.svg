@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#5b6472"/>
+    </marker>
+  </defs>
+  <rect width="960" height="520" fill="#ffffff"/>
+
+  <!-- Customer / UI -->
+  <rect x="30" y="200" width="170" height="110" rx="12" fill="#eef4ff" stroke="#4f8cff" stroke-width="2"/>
+  <text x="115" y="238" text-anchor="middle" font-size="16" font-weight="700" fill="#1b2430">Customer chat</text>
+  <text x="115" y="262" text-anchor="middle" font-size="13" fill="#4a5563">Support console</text>
+  <text x="115" y="282" text-anchor="middle" font-size="13" fill="#4a5563">ON · OFF · Compare</text>
+
+  <!-- Agent -->
+  <rect x="290" y="170" width="260" height="170" rx="12" fill="#f6f8fa" stroke="#1b2430" stroke-width="2"/>
+  <text x="420" y="202" text-anchor="middle" font-size="17" font-weight="700" fill="#1b2430">Relay agent (FastAPI)</text>
+  <text x="310" y="232" font-size="13" fill="#1b2430">1. recall customer bank + playbook</text>
+  <text x="310" y="256" font-size="13" fill="#1b2430">2. prompt = CRM + memories</text>
+  <text x="310" y="280" font-size="13" fill="#1b2430">3. LLM tool loop (max 5 rounds)</text>
+  <text x="310" y="304" font-size="13" fill="#1b2430">4. reply</text>
+  <text x="310" y="328" font-size="13" fill="#1b2430">5. retain transcript (async upsert)</text>
+
+  <!-- Hindsight -->
+  <rect x="640" y="30" width="290" height="230" rx="12" fill="#f4eeff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="785" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#3b1d7a">Hindsight memory</text>
+  <rect x="660" y="80" width="250" height="62" rx="8" fill="#ffffff" stroke="#b69cf5"/>
+  <text x="672" y="104" font-size="13" font-weight="600" fill="#3b1d7a">Per-customer banks</text>
+  <text x="672" y="126" font-size="12" fill="#4a5563">setup · fixes · failed fixes · promises</text>
+  <rect x="660" y="152" width="250" height="62" rx="8" fill="#ffffff" stroke="#6cc494"/>
+  <text x="672" y="176" font-size="13" font-weight="600" fill="#1f6b45">Shared playbook bank</text>
+  <text x="672" y="198" font-size="12" fill="#4a5563">anonymised symptom → cause → fix</text>
+  <text x="785" y="244" text-anchor="middle" font-size="12" fill="#4a5563">recall · retain · reflect (“Brief me”)</text>
+
+  <!-- LLM -->
+  <rect x="640" y="290" width="290" height="80" rx="12" fill="#fff7ea" stroke="#e3a33b" stroke-width="2"/>
+  <text x="785" y="322" text-anchor="middle" font-size="16" font-weight="700" fill="#6b4a12">LLM (Groq, OpenAI-compatible)</text>
+  <text x="785" y="346" text-anchor="middle" font-size="12" fill="#4a5563">retry → fallback model → no-tools answer</text>
+
+  <!-- SQLite -->
+  <rect x="640" y="400" width="290" height="90" rx="12" fill="#eefaf3" stroke="#3fb97b" stroke-width="2"/>
+  <text x="785" y="430" text-anchor="middle" font-size="16" font-weight="700" fill="#1f6b45">System of record (SQLite)</text>
+  <text x="785" y="452" text-anchor="middle" font-size="12" fill="#4a5563">customers · shipments · invoices · tickets</text>
+  <text x="785" y="472" text-anchor="middle" font-size="12" fill="#4a5563">credits (≤ $200) · escalations · status</text>
+
+  <!-- Arrows -->
+  <line x1="200" y1="255" x2="286" y2="255" stroke="#5b6472" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="550" y1="200" x2="636" y2="140" stroke="#8b5cf6" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="550" y1="270" x2="636" y2="325" stroke="#e3a33b" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="550" y1="320" x2="636" y2="440" stroke="#3fb97b" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+  <text x="604" y="392" font-size="12" fill="#4a5563">tools</text>
+
+  <!-- Resolve loop -->
+  <path d="M420 170 L420 110 L636 110" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="300" y="72" font-size="12" fill="#3b1d7a">Resolve &amp; learn: summary → customer bank,</text>
+  <text x="300" y="90" font-size="12" fill="#3b1d7a">anonymised lesson → playbook</text>
+</svg>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShipRelay Support Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">SR</span>
+      <div>
+        <div class="brand-name">ShipRelay Support</div>
+        <div class="brand-sub">Relay agent · memory by Hindsight</div>
+      </div>
+    </div>
+    <div class="status" id="status"></div>
+  </header>
+
+  <main class="layout">
+    <!-- Inbox -->
+    <aside class="panel inbox">
+      <div class="panel-title">Customers</div>
+      <ul id="customer-list" class="customer-list"></ul>
+    </aside>
+
+    <!-- Conversation -->
+    <section class="panel convo">
+      <div class="convo-head">
+        <div id="convo-who" class="convo-who">Pick a customer</div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Mode">
+            <button data-mode="on" class="seg-btn active" title="Agent recalls and retains with Hindsight">Memory ON</button>
+            <button data-mode="off" class="seg-btn" title="Stateless agent: CRM record only">Memory OFF</button>
+            <button data-mode="compare" class="seg-btn" title="Same message to both agents, side by side">Compare</button>
+          </div>
+          <button id="new-chat" class="btn ghost">New chat</button>
+          <button id="resolve" class="btn primary" disabled>Resolve &amp; learn</button>
+        </div>
+      </div>
+
+      <div id="chat-columns" class="chat-columns"></div>
+
+      <div class="suggestions" id="suggestions"></div>
+      <form id="composer" class="composer">
+        <textarea id="input" rows="2" placeholder="Type as the customer…  (Enter to send, Shift+Enter for newline)" disabled></textarea>
+        <button class="btn primary" id="send" disabled>Send</button>
+      </form>
+    </section>
+
+    <!-- Memory -->
+    <aside class="panel memory">
+      <div class="panel-title">
+        Memory
+        <button id="brief-btn" class="btn tiny" disabled title="Hindsight reflect over this customer's bank">Brief me</button>
+      </div>
+      <div id="brief" class="brief hidden"></div>
+
+      <div class="mem-section">
+        <div class="mem-head">Recalled about this customer <span class="count" id="cust-count">0</span></div>
+        <ul id="cust-mem" class="mem-list"><li class="empty">Send a message with memory on to see what the agent recalls.</li></ul>
+      </div>
+      <div class="mem-section">
+        <div class="mem-head">From the shared playbook <span class="count" id="play-count">0</span></div>
+        <ul id="play-mem" class="mem-list"><li class="empty">Fixes learned from other merchants show up here.</li></ul>
+      </div>
+      <div class="mem-section">
+        <div class="mem-head">Tool calls</div>
+        <ul id="tools" class="tool-list"><li class="empty">None yet.</li></ul>
+      </div>
+      <div class="mem-section">
+        <div class="mem-head">CRM record</div>
+        <div id="crm" class="crm"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
