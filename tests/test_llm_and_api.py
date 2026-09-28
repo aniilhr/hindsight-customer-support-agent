@@ -62,6 +62,13 @@ async def test_llm_last_resort_drops_tools():
     assert "degraded" in out
 
 
+async def test_llm_without_tools_falls_back_to_other_model():
+    llm, calls = llm_with(failures=1)
+    out = await llm.complete([{"role": "user", "content": "hi"}])
+    assert out["content"] == "Here you go."
+    assert calls.calls[1]["model"] == load_settings().llm_fallback_model
+
+
 async def test_llm_gives_up_cleanly():
     llm, _ = llm_with(failures=10)
     with pytest.raises(RuntimeError):
