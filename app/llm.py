@@ -62,6 +62,10 @@ class OpenAICompatibleLLM:
             if self.fallback_model and self.fallback_model != self.model:
                 attempts.append((self.fallback_model, tools))
             attempts.append((self.model, None))  # last resort: no tools
+        elif self.fallback_model and self.fallback_model != self.model:
+            # Plain completions (resolve summaries) still deserve a second model, e.g. when the
+            # primary one hits a per-model rate limit.
+            attempts.append((self.fallback_model, None))
         last_error: Exception | None = None
         for model, attempt_tools in attempts:
             try:
