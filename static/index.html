@@ -3,82 +3,161 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ShipRelay Support Console</title>
+  <title>Relay Support Console</title>
+  <meta name="color-scheme" content="dark light" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236d8bff'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M11 22V10h6a4 4 0 0 1 0 8h-3l6 4' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try { const t = localStorage.getItem("relay-theme"); if (t) document.documentElement.dataset.theme = t; } catch (_) {}
+  </script>
 </head>
 <body>
   <header class="topbar">
+    <button class="icon-btn show-narrow" id="toggle-inbox" aria-label="Show customers" title="Customers"></button>
     <div class="brand">
-      <span class="logo">SR</span>
-      <div>
-        <div class="brand-name">ShipRelay Support</div>
-        <div class="brand-sub">Relay agent · memory by Hindsight</div>
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d8bff" /><stop offset="1" stop-color="#a78bfa" /></linearGradient></defs>
+        <rect width="32" height="32" rx="9" fill="url(#logo-g)" />
+        <path d="M11 22V10h6a4 4 0 0 1 0 8h-3l6 4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <div class="brand-text">
+        <div class="brand-name">Relay <span class="brand-tag">Support console</span></div>
+        <div class="brand-sub">ShipRelay · memory by Hindsight</div>
       </div>
     </div>
-    <div class="status" id="status"></div>
+    <div class="topbar-right">
+      <button class="status" id="status" title="Service status (click to re-check)"><span class="status-item"><span class="dot pending"></span>Connecting…</span></button>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle light / dark"></button>
+      <button class="icon-btn show-mid" id="toggle-insights" aria-label="Show memory panel" title="Memory &amp; account"><span class="badge-dot hidden" id="insights-badge"></span></button>
+    </div>
   </header>
 
   <main class="layout">
-    <!-- Inbox -->
-    <aside class="panel inbox">
-      <div class="panel-title">Customers</div>
-      <ul id="customer-list" class="customer-list"></ul>
+    <!-- Customers -->
+    <aside class="sidebar" id="inbox" aria-label="Customers">
+      <div class="sidebar-search">
+        <label class="search">
+          <span class="search-icon" data-icon="search"></span>
+          <input id="search" type="search" placeholder="Search customers" autocomplete="off" aria-label="Search customers" />
+          <kbd>/</kbd>
+        </label>
+      </div>
+      <div class="sidebar-label">Customers <span class="count" id="cust-total">0</span></div>
+      <ul id="customer-list" class="customer-list">
+        <li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li>
+      </ul>
+      <div class="sidebar-foot">
+        <div class="legend"><span class="legend-sw mem"></span>Customer memory</div>
+        <div class="legend"><span class="legend-sw play"></span>Shared playbook</div>
+      </div>
     </aside>
 
-    <!-- Conversation -->
-    <section class="panel convo">
+    <!-- Workspace -->
+    <section class="workspace" aria-label="Conversation">
       <div class="convo-head">
-        <div id="convo-who" class="convo-who">Pick a customer</div>
+        <div id="convo-who" class="who">
+          <div class="who-empty">No customer selected</div>
+        </div>
         <div class="controls">
-          <div class="seg" role="group" aria-label="Mode">
-            <button data-mode="on" class="seg-btn active" title="Agent recalls and retains with Hindsight">Memory ON</button>
-            <button data-mode="off" class="seg-btn" title="Stateless agent: CRM record only">Memory OFF</button>
-            <button data-mode="compare" class="seg-btn" title="Same message to both agents, side by side">Compare</button>
+          <div class="seg" id="mode-seg" role="radiogroup" aria-label="Agent mode">
+            <span class="seg-thumb" aria-hidden="true"></span>
+            <button type="button" role="radio" aria-checked="true" data-mode="on" class="seg-btn active" title="Agent recalls and retains with Hindsight"><span data-icon="database"></span><span class="seg-label">Memory on</span></button>
+            <button type="button" role="radio" aria-checked="false" data-mode="off" class="seg-btn" title="Stateless agent: CRM record only"><span data-icon="ban"></span><span class="seg-label">Memory off</span></button>
+            <button type="button" role="radio" aria-checked="false" data-mode="compare" class="seg-btn" title="Same message to both agents, side by side"><span data-icon="columns"></span><span class="seg-label">Compare</span></button>
           </div>
-          <button id="new-chat" class="btn ghost">New chat</button>
-          <button id="resolve" class="btn primary" disabled>Resolve &amp; learn</button>
+          <button id="new-chat" class="btn ghost" disabled title="Start a fresh conversation"><span data-icon="plus"></span><span class="btn-label">New chat</span></button>
+          <button id="resolve" class="btn primary" disabled title="Close the chat and write the lesson to memory"><span data-icon="check"></span><span class="btn-label">Resolve &amp; learn</span></button>
         </div>
       </div>
 
-      <div id="chat-columns" class="chat-columns"></div>
+      <div class="stage">
+        <div id="welcome" class="welcome">
+          <div class="welcome-inner">
+            <div class="eyebrow"><span data-icon="sparkles"></span>Hindsight agent memory</div>
+            <h1>Support that <span class="grad">remembers</span>.</h1>
+            <p class="lede">Relay recalls every past ticket and chat before it replies, and learns from each case it resolves. Pick a merchant, then try the same message with memory on and off.</p>
+            <ol class="steps">
+              <li><span class="step-n">1</span><div><b>Pick a customer</b><span>Each has real history in their own memory bank.</span></div></li>
+              <li><span class="step-n">2</span><div><b>Chat as them</b><span>Use <em>Compare</em> to see both agents side by side.</span></div></li>
+              <li><span class="step-n">3</span><div><b>Resolve &amp; learn</b><span>The lesson goes to the customer bank and the shared playbook.</span></div></li>
+            </ol>
+            <div class="scenarios-label">Try a scenario</div>
+            <div class="scenarios" id="scenarios"></div>
+          </div>
+        </div>
+        <div id="chat-columns" class="chat-columns hidden"></div>
+      </div>
 
-      <div class="suggestions" id="suggestions"></div>
-      <form id="composer" class="composer">
-        <textarea id="input" rows="2" placeholder="Type as the customer…  (Enter to send, Shift+Enter for newline)" disabled></textarea>
-        <button class="btn primary" id="send" disabled>Send</button>
-      </form>
+      <div class="composer-wrap" id="composer-wrap">
+        <div class="suggestions" id="suggestions"></div>
+        <form id="composer" class="composer" autocomplete="off">
+          <textarea id="input" rows="1" maxlength="4000" placeholder="Pick a customer to start chatting" disabled aria-label="Message as the customer"></textarea>
+          <div class="composer-bar">
+            <span class="hint"><kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line</span>
+            <span class="char-count" id="char-count"></span>
+            <button class="btn primary send" id="send" disabled aria-label="Send"><span data-icon="send"></span><span class="btn-label">Send</span></button>
+          </div>
+        </form>
+        <div id="resolved-bar" class="resolved-bar hidden">
+          <span data-icon="check"></span>
+          <span id="resolved-text">Conversation resolved.</span>
+          <button type="button" class="btn primary sm" id="resolved-new"><span data-icon="plus"></span>Start new chat</button>
+        </div>
+      </div>
     </section>
 
-    <!-- Memory -->
-    <aside class="panel memory">
-      <div class="panel-title">
-        Memory
-        <button id="brief-btn" class="btn tiny" disabled title="Hindsight reflect over this customer's bank">Brief me</button>
+    <!-- Insights -->
+    <aside class="insights" id="insights" aria-label="Memory and account">
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="memory"><span data-icon="history"></span>Memory <span class="count" id="tab-mem-count">0</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tools"><span data-icon="wrench"></span>Tools <span class="count" id="tab-tool-count">0</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="account"><span data-icon="user"></span>Account</button>
+        <button class="icon-btn close-drawer show-mid" id="close-insights" aria-label="Close panel"></button>
       </div>
-      <div id="brief" class="brief hidden"></div>
 
-      <div class="mem-section">
-        <div class="mem-head">Recalled about this customer <span class="count" id="cust-count">0</span></div>
-        <ul id="cust-mem" class="mem-list"><li class="empty">Send a message with memory on to see what the agent recalls.</li></ul>
+      <div class="tab-panel" data-panel="memory" role="tabpanel">
+        <div class="brief-card" id="brief-card">
+          <div class="brief-head">
+            <div>
+              <div class="brief-title"><span data-icon="sparkles"></span>Pre-reply brief</div>
+              <div class="brief-sub">Hindsight <code>reflect</code> over this customer's whole bank</div>
+            </div>
+            <button id="brief-btn" class="btn sm" disabled>Brief me</button>
+          </div>
+          <div id="brief" class="brief-body hidden"></div>
+        </div>
+
+        <div id="mem-off-note" class="notice hidden"><span data-icon="ban"></span><div><b>Memory is off for this chat.</b> The agent sees only the CRM record, like most support bots. Switch to <em>Memory on</em> or <em>Compare</em> to see recall.</div></div>
+
+        <section class="mem-group">
+          <div class="group-head"><span class="group-icon mem" data-icon="history"></span>About this customer <span class="count" id="cust-count">0</span></div>
+          <div class="group-sub">Recalled from their private bank for the latest message</div>
+          <ul id="cust-mem" class="mem-list"></ul>
+        </section>
+        <section class="mem-group">
+          <div class="group-head"><span class="group-icon play" data-icon="book"></span>Shared playbook <span class="count" id="play-count">0</span></div>
+          <div class="group-sub">Anonymised fixes learned from other merchants</div>
+          <ul id="play-mem" class="mem-list"></ul>
+        </section>
       </div>
-      <div class="mem-section">
-        <div class="mem-head">From the shared playbook <span class="count" id="play-count">0</span></div>
-        <ul id="play-mem" class="mem-list"><li class="empty">Fixes learned from other merchants show up here.</li></ul>
+
+      <div class="tab-panel hidden" data-panel="tools" role="tabpanel">
+        <div class="group-sub pad">Every tool the agent called against the system of record, newest first.</div>
+        <ul id="tools" class="tool-list"></ul>
       </div>
-      <div class="mem-section">
-        <div class="mem-head">Tool calls</div>
-        <ul id="tools" class="tool-list"><li class="empty">None yet.</li></ul>
-      </div>
-      <div class="mem-section">
-        <div class="mem-head">CRM record</div>
+
+      <div class="tab-panel hidden" data-panel="account" role="tabpanel">
         <div id="crm" class="crm"></div>
       </div>
     </aside>
   </main>
 
-  <div id="toast" class="toast hidden"></div>
+  <div class="scrim" id="scrim"></div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
   <script src="/static/app.js"></script>
 </body>
 </html>
