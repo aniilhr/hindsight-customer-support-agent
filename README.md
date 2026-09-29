@@ -3,6 +3,8 @@
 **Relay** is the support agent for *ShipRelay*, a (fictional) shipping and fulfilment platform used by online merchants. It answers customers in chat, checks shipments and invoices, opens tickets, issues credits and escalates.
 
 
+**Youtube Link:** https://youtu.be/bAWXNoiuziU
+
 
 Most support bots are stateless. They know the CRM record, so they know your plan. They don't know that your Zebra printer went blank last spring because a firmware update reset it to 203 dpi, that the first rep made you reinstall the Print Agent for nothing, or that we promised your account manager would be copied the next time FedEx rates broke. Relay knows these things because every conversation is written to [Hindsight](https://github.com/vectorize-io/hindsight) agent memory and recalled before each reply.
 
